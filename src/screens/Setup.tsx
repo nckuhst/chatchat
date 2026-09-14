@@ -25,7 +25,7 @@ export default function Setup({ savedExists, onStart, onResume }: SetupProps) {
       <fieldset className="tier-picker">
         <legend>層級</legend>
         {TIER_ORDER.map((tier) => (
-          <label key={tier} className="tier-option">
+          <label key={tier} className="tier-option" data-tier={tier}>
             <input
               type="checkbox"
               checked={selected.includes(tier)}
