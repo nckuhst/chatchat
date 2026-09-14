@@ -60,6 +60,30 @@ describe('loadGame 的防禦', () => {
     expect(loadGame(storage)).toBeNull()
   })
 
+  it('deck 陣列裡含有非字串元素時回傳 null', () => {
+    storage.raw.set(
+      STORAGE_KEY,
+      JSON.stringify({ version: SCHEMA_VERSION, state: { ...state, deck: [1, 2, 3] } }),
+    )
+    expect(loadGame(storage)).toBeNull()
+  })
+
+  it('skipped 陣列裡含有非字串元素時回傳 null', () => {
+    storage.raw.set(
+      STORAGE_KEY,
+      JSON.stringify({ version: SCHEMA_VERSION, state: { ...state, skipped: [null] } }),
+    )
+    expect(loadGame(storage)).toBeNull()
+  })
+
+  it('selectedTiers 陣列裡含有非字串元素時回傳 null', () => {
+    storage.raw.set(
+      STORAGE_KEY,
+      JSON.stringify({ version: SCHEMA_VERSION, state: { ...state, selectedTiers: [1] } }),
+    )
+    expect(loadGame(storage)).toBeNull()
+  })
+
   it('缺少 state 欄位時回傳 null', () => {
     storage.raw.set(STORAGE_KEY, JSON.stringify({ version: SCHEMA_VERSION }))
     expect(loadGame(storage)).toBeNull()

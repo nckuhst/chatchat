@@ -9,13 +9,17 @@ export interface StorageLike {
   removeItem(key: string): void
 }
 
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((v) => typeof v === 'string')
+}
+
 function isGameState(value: unknown): value is GameState {
   if (typeof value !== 'object' || value === null) return false
   const s = value as Record<string, unknown>
   return (
-    Array.isArray(s.selectedTiers) &&
-    Array.isArray(s.deck) &&
-    Array.isArray(s.skipped) &&
+    isStringArray(s.selectedTiers) &&
+    isStringArray(s.deck) &&
+    isStringArray(s.skipped) &&
     typeof s.position === 'number' &&
     typeof s.startedAt === 'number'
   )

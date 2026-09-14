@@ -10,6 +10,7 @@ import {
   gameReducer,
   indexQuestions,
   isFinished,
+  isResumable,
   isTierBoundary,
 } from './game/reducer'
 import type { GameAction } from './game/reducer'
@@ -19,16 +20,27 @@ import type { GameState, Tier } from './game/types'
 export default function App() {
   const byId = useMemo(() => indexQuestions(QUESTIONS), [])
   const [game, setGame] = useState<GameState | null>(null)
-  const [saved, setSaved] = useState<GameState | null>(() => loadGame(localStorage))
+  const [saved, setSaved] = useState<GameState | null>(() => {
+    const s = loadGame(localStorage)
+    return s && isResumable(s, byId) ? s : null
+  })
   const [ackPosition, setAckPosition] = useState<number | null>(null)
 
   useEffect(() => {
     if (game) saveGame(game, localStorage)
   }, [game])
 
+  // useState 的惰性初始化式不該有副作用，所以「丟棄不可繼續的舊存檔」
+  // 放到這個掛載後才跑一次的 effect 裡，而不是塞進上面的初始化式。
+  useEffect(() => {
+    const s = loadGame(localStorage)
+    if (s && !isResumable(s, byId)) clearGame(localStorage)
+  }, [])
+
   function start(tiers: Tier[]) {
     setSaved(null)
     clearGame(localStorage)
+    setAckPosition(null)
     setGame(createGame(QUESTIONS, tiers, Math.random, Date.now()))
   }
 

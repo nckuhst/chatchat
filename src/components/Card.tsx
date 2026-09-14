@@ -5,7 +5,7 @@ export default function Card({ question }: { question: Question }) {
   return (
     <article className="card" data-tier={question.tier}>
       <span className="card__tier">{TIER_LABEL[question.tier]}</span>
-      <p className="card__text">{question.text}</p>
+      <h1 className="card__text">{question.text}</h1>
     </article>
   )
 }

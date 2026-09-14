@@ -5,6 +5,7 @@ import {
   gameReducer,
   indexQuestions,
   isFinished,
+  isResumable,
   isTierBoundary,
 } from './reducer'
 import type { GameState, Question, Rng } from './types'
@@ -109,5 +110,23 @@ describe('isTierBoundary', () => {
 
   it('牌堆耗盡時為 false', () => {
     expect(isTierBoundary(stateWithDeck(['w-01'], 1), byId)).toBe(false)
+  })
+})
+
+describe('isResumable', () => {
+  it('尚未結束、且牌堆 id 都存在於題庫時為 true', () => {
+    expect(isResumable(stateWithDeck(['w-01', 'w-02'], 1), byId)).toBe(true)
+  })
+
+  it('已結束的存檔為 false', () => {
+    expect(isResumable(stateWithDeck(['w-01'], 1), byId)).toBe(false)
+  })
+
+  it('牌堆含有題庫裡已不存在的 id 時為 false', () => {
+    expect(isResumable(stateWithDeck(['w-01', 'gone'], 1), byId)).toBe(false)
+  })
+
+  it('空牌堆（視為已結束）為 false', () => {
+    expect(isResumable(stateWithDeck([], 0), byId)).toBe(false)
   })
 })

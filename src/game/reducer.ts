@@ -37,8 +37,23 @@ export function isTierBoundary(
   if (state.position === 0 || isFinished(state)) return false
   const current = byId[state.deck[state.position]]
   const previous = byId[state.deck[state.position - 1]]
+  // 牌堆裡的 id 可能已不存在於目前的題庫（例如載入了題庫更新前的舊存檔）；
+  // 這裡防止對 undefined 取 .tier 而炸掉整個畫面。
   if (!current || !previous) return false
   return current.tier !== previous.tier
+}
+
+/**
+ * 判斷一份存檔是否值得提供「繼續上一場」：
+ * 尚未完成，且牌堆中每個題目 id 都存在於目前的題庫。
+ * 後者防止題庫改版後，舊存檔指向已不存在的題目 id，
+ * 讓遊戲畫面在解參考時炸掉（見 isTierBoundary 的防護註解）。
+ */
+export function isResumable(
+  state: GameState,
+  byId: Readonly<Record<string, Question>>,
+): boolean {
+  return !isFinished(state) && state.deck.every((id) => id in byId)
 }
 
 export function gameReducer(state: GameState, action: GameAction): GameState {

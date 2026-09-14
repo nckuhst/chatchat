@@ -20,7 +20,7 @@ export default function Interstitial({ tier, onContinue }: InterstitialProps) {
   return (
     <main className="screen screen--interstitial" data-tier={tier}>
       <p className="interstitial__label">接下來是</p>
-      <h2 className="interstitial__tier">{TIER_LABEL[tier]}</h2>
+      <h1 className="interstitial__tier">{TIER_LABEL[tier]}</h1>
       <p className="interstitial__blurb">{BLURB[tier]}</p>
       <button type="button" className="button button--primary" onClick={onContinue}>
         繼續
