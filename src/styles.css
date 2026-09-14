@@ -1,17 +1,577 @@
+/* ============================================================
+   深度對話卡牌 — 視覺設計
+   概念：入夜。四個層級是一個傍晚的四段光線，由明亮走向沉靜。
+   卡片底色隨層級變深——燈慢慢暗下來，話才說得出口。
+   ============================================================ */
+
+/* ---------- 色階原料：由淺到深的一條序列 ----------
+   色相單向轉動 40° 琥珀 → 353° 玫瑰 → 285° 紫 → 232° 墨藍，
+   明度逐級遞減。bg 是卡面，fg 是卡面上的主文字，
+   mid 是卡面上的次要文字，edge 是卡緣，mark 是放在頁面底色上的識別色。 */
 :root {
   color-scheme: light dark;
-  font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
+
+  --warmup-bg: #f8e5c3;
+  --warmup-fg: #3e2c11;
+  --warmup-mid: #7a5a22;
+  --warmup-edge: #e6cb99;
+  --warmup-mark: #8a5a12;
+
+  --star1-bg: #e6a3ab;
+  --star1-fg: #3f1c2a;
+  --star1-mid: #6e2f42;
+  --star1-edge: #d68f99;
+  --star1-mark: #9e4257;
+
+  --star2-bg: #74568f;
+  --star2-fg: #f7f1f8;
+  --star2-mid: #efe4f2;
+  --star2-edge: #5e4278;
+  --star2-mark: #6b4a85;
+
+  --star3-bg: #2f3358;
+  --star3-fg: #e8e6f4;
+  --star3-mid: #b7b4d6;
+  --star3-edge: #222643;
+  --star3-mark: #2f3358;
+
+  /* ---------- 中性色：桌面與紙 ---------- */
+  --paper: #ece9f1;
+  --panel: #f7f5fa;
+  --ink: #241f35;
+  --ink-soft: #4c4664;
+  --ink-muted: #635c7d;
+  --line: #d8d2e3;
+  --line-strong: #7a7091;
+  --focus: #4b3f7a;
+  --shadow: 0 22px 44px -28px rgba(36, 31, 53, 0.55);
+
+  /* ---------- 字體：兩個家族，各司其職 ----------
+     serif（宋體／明體）是卡片的聲音：標題、題目、層級名。
+     sans 是裝置的聲音：按鈕、進度、標籤。皆為系統字體，不外掛 CDN。 */
+  --font-sans: system-ui, -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC",
+    "Microsoft JhengHei", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Songti TC", "Noto Serif TC", "Noto Serif CJK TC", "Source Han Serif TC",
+    "PMingLiU", Georgia, "Times New Roman", serif;
+
+  /* ---------- 字級 ---------- */
+  --t-xs: 0.8125rem;
+  --t-sm: 0.9375rem;
+  --t-base: 1.0625rem;
+  --t-lede: 1.125rem;
+  --t-title: clamp(2rem, 9vw, 2.75rem);
+  --t-card: clamp(1.75rem, 7.6vw, 2.375rem);
+  --t-tier: clamp(2.5rem, 13vw, 3.75rem);
+
+  /* ---------- 形狀與節奏 ---------- */
+  --radius-card: 22px;
+  --radius-button: 999px;
+  --radius-swatch: 8px;
+  --gutter: 1.25rem;
+  --tap: 52px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --warmup-bg: #d5bb88;
+    --warmup-fg: #2a1e08;
+    --warmup-mid: #4f3a11;
+    --warmup-edge: #bb9f6c;
+    --warmup-mark: #e0c48f;
+
+    --star1-bg: #c08e97;
+    --star1-fg: #24101a;
+    --star1-mid: #452030;
+    --star1-edge: #a77680;
+    --star1-mark: #e2a2ab;
+
+    --star2-bg: #6e5289;
+    --star2-fg: #f2e9f6;
+    --star2-mid: #e4d8ec;
+    --star2-edge: #563e6e;
+    --star2-mark: #be9cd4;
+
+    --star3-bg: #262a47;
+    --star3-fg: #dfdcef;
+    --star3-mid: #a9a5ce;
+    --star3-edge: #1a1d31;
+    --star3-mark: #8e92c8;
+
+    --paper: #141220;
+    --panel: #1d1a2b;
+    --ink: #ebe8f4;
+    --ink-soft: #c0bad4;
+    --ink-muted: #9c95b4;
+    --line: #2e2942;
+    --line-strong: #6b6288;
+    --focus: #b9aee8;
+    --shadow: 0 22px 44px -26px rgba(0, 0, 0, 0.72);
+  }
+}
+
+/* ---------- 層級對映：同一組變數，卡片與過場共用 ---------- */
+[data-tier="warmup"] {
+  --tier-bg: var(--warmup-bg);
+  --tier-fg: var(--warmup-fg);
+  --tier-mid: var(--warmup-mid);
+  --tier-edge: var(--warmup-edge);
+  --tier-mark: var(--warmup-mark);
+}
+[data-tier="star1"] {
+  --tier-bg: var(--star1-bg);
+  --tier-fg: var(--star1-fg);
+  --tier-mid: var(--star1-mid);
+  --tier-edge: var(--star1-edge);
+  --tier-mark: var(--star1-mark);
+}
+[data-tier="star2"] {
+  --tier-bg: var(--star2-bg);
+  --tier-fg: var(--star2-fg);
+  --tier-mid: var(--star2-mid);
+  --tier-edge: var(--star2-edge);
+  --tier-mark: var(--star2-mark);
+}
+[data-tier="star3"] {
+  --tier-bg: var(--star3-bg);
+  --tier-fg: var(--star3-fg);
+  --tier-mid: var(--star3-mid);
+  --tier-edge: var(--star3-edge);
+  --tier-mark: var(--star3-mark);
+}
+
+/* ============================================================
+   基礎
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
   min-height: 100dvh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--t-base);
+  line-height: 1.7;
+  overscroll-behavior-y: contain;
+  -webkit-font-smoothing: antialiased;
 }
 
 #root {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding: 24px 20px;
-  box-sizing: border-box;
+}
+
+h1,
+h2,
+p,
+fieldset,
+legend {
+  margin: 0;
+  padding: 0;
+}
+
+fieldset {
+  border: 0;
+  min-width: 0;
+}
+
+/* ============================================================
+   版面：每個畫面都是一支直式的彈性欄
+   ============================================================ */
+
+.screen {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 32rem;
+  margin-inline: auto;
+  padding-top: calc(1.5rem + env(safe-area-inset-top));
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  padding-left: calc(var(--gutter) + env(safe-area-inset-left));
+  padding-right: calc(var(--gutter) + env(safe-area-inset-right));
+}
+
+/* ---------- Setup：表單，靠左讀 ---------- */
+.screen--setup {
+  text-align: start;
+}
+
+.screen--setup h1 {
+  font-family: var(--font-serif);
+  font-size: var(--t-title);
+  font-weight: 400;
+  line-height: 1.22;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+}
+
+/* ---------- Play：卡片是主角，佔掉剩下的所有高度 ---------- */
+.screen--play {
+  text-align: center;
+}
+
+/* ---------- Interstitial：整面鋪滿層級色，內容自己收窄 ---------- */
+.screen--interstitial {
+  max-width: none;
+  text-align: center;
+  background: var(--tier-bg);
+  color: var(--tier-fg);
+}
+
+.screen--interstitial > * {
+  width: 100%;
+  max-width: 26rem;
+  margin-inline: auto;
+}
+
+/* ---------- Finished：收尾，置中 ---------- */
+.screen--finished {
+  text-align: center;
+}
+
+/* 走過的四層，收在一條細帶裡 */
+.screen--finished::before {
+  content: "";
+  display: block;
+  width: 7rem;
+  height: 4px;
+  margin: auto auto 1.75rem;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--warmup-bg) 0 25%,
+    var(--star1-bg) 25% 50%,
+    var(--star2-bg) 50% 75%,
+    var(--star3-bg) 75% 100%
+  );
+}
+
+.screen--finished h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 8vw, 2.25rem);
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.25rem;
+}
+
+/* ============================================================
+   共用文字
+   ============================================================ */
+
+.lede {
+  font-size: var(--t-lede);
+  line-height: 1.9;
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
+
+.screen--setup .lede {
+  margin-bottom: 2rem;
+  max-width: 26rem;
+}
+
+.screen--finished .lede + .lede {
+  margin-top: 1rem;
+}
+
+/* ============================================================
+   Setup：層級選擇
+   ============================================================ */
+
+.tier-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tier-picker legend {
+  font-size: var(--t-xs);
+  letter-spacing: 0.16em;
+  color: var(--ink-muted);
+  margin-bottom: 0.75rem;
+}
+
+/* 四個色票依序取用色階，讓漸進序列在開始前就看得見。
+   順序由 TIER_ORDER 固定：warmup / star1 / star2 / star3。 */
+.tier-option:nth-of-type(1) {
+  --tier-bg: var(--warmup-bg);
+  --tier-mark: var(--warmup-mark);
+}
+.tier-option:nth-of-type(2) {
+  --tier-bg: var(--star1-bg);
+  --tier-mark: var(--star1-mark);
+}
+.tier-option:nth-of-type(3) {
+  --tier-bg: var(--star2-bg);
+  --tier-mark: var(--star2-mark);
+}
+.tier-option:nth-of-type(4) {
+  --tier-bg: var(--star3-bg);
+  --tier-mark: var(--star3-mark);
+}
+
+.tier-option {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-height: var(--tap);
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.tier-option:has(input:checked) {
+  border-color: var(--tier-mark);
+}
+
+.tier-option:focus-within {
+  border-color: var(--focus);
+}
+
+.tier-option input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: 0;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-swatch);
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+/* 勾選了就填上那一層真正的卡面色——色票即預覽 */
+.tier-option input[type="checkbox"]:checked {
+  background: var(--tier-bg);
+  border-color: var(--tier-mark);
+}
+
+.tier-option span {
+  font-size: var(--t-base);
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   Play：進度、卡片、動作
+   ============================================================ */
+
+.progress {
+  font-size: var(--t-xs);
+  letter-spacing: 0.14em;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 1rem;
+}
+
+.card {
+  flex: 1 1 auto;
+  min-height: 20rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem 1.5rem 2.5rem;
+  border: 1px solid var(--tier-edge);
+  border-radius: var(--radius-card);
+  background: var(--tier-bg);
+  color: var(--tier-fg);
+  box-shadow: var(--shadow);
+}
+
+.card__tier {
+  align-self: flex-start;
+  font-family: var(--font-sans);
+  font-size: var(--t-sm);
+  letter-spacing: 0.18em;
+  color: var(--tier-mid);
+}
+
+/* auto margin 讓題目落在剩餘空間的視覺中心，不需要量測 */
+.card__text {
+  margin: auto 0;
+  font-family: var(--font-serif);
+  font-size: var(--t-card);
+  font-weight: 400;
+  line-height: 1.85;
+  letter-spacing: 0.03em;
+  color: var(--tier-fg);
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.actions .button {
+  flex: 1 1 8rem;
+  min-width: 0;
+}
+
+/* ============================================================
+   Interstitial：層級登場
+   ============================================================ */
+
+.interstitial__label {
+  margin-top: auto;
+  font-size: var(--t-base);
+  letter-spacing: 0.08em;
+  color: var(--tier-mid);
+}
+
+.interstitial__tier {
+  font-family: var(--font-serif);
+  font-size: var(--t-tier);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0.08em;
+  color: var(--tier-fg);
+  margin-block: 0.5rem 1.5rem;
+}
+
+.interstitial__blurb {
+  font-size: var(--t-lede);
+  line-height: 1.9;
+  color: var(--tier-fg);
+  text-wrap: pretty;
+}
+
+/* ============================================================
+   按鈕
+   ============================================================ */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  min-width: 44px;
+  padding: 0.75rem 1.5rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-button);
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: var(--t-base);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease,
+    transform 90ms ease;
+}
+
+.button--primary {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  border-color: var(--line);
+  background: var(--line);
+  color: var(--ink-soft);
+  transform: none;
+}
+
+/* Setup 的兩顆按鈕直向堆疊、各自滿寬——390px 下沒有並排溢出的可能 */
+.screen--setup .button {
+  width: 100%;
+}
+
+.screen--setup .button--primary {
+  margin-top: auto;
+}
+
+.screen--setup .button + .button {
+  margin-top: 0.75rem;
+}
+
+/* 過場與結束畫面的按鈕收在底部 */
+.screen--interstitial .button {
+  margin-top: auto;
+}
+
+.screen--finished .button {
+  margin-top: auto;
+  align-self: center;
+  min-width: 12rem;
+}
+
+/* 過場上的主按鈕反白成該層級的卡面色 */
+.screen--interstitial .button--primary {
+  border-color: var(--tier-fg);
+  background: var(--tier-fg);
+  color: var(--tier-bg);
+}
+
+@media (hover: hover) {
+  .button:hover:not(:disabled) {
+    border-color: var(--ink);
+  }
+  .button--primary:hover:not(:disabled) {
+    background: var(--ink-soft);
+    border-color: var(--ink-soft);
+  }
+  .screen--interstitial .button--primary:hover:not(:disabled) {
+    background: var(--tier-mid);
+    border-color: var(--tier-mid);
+  }
+  .tier-option:hover {
+    border-color: var(--line-strong);
+  }
+}
+
+/* ============================================================
+   焦點與動態
+   ============================================================ */
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.screen--interstitial :focus-visible {
+  outline-color: var(--tier-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+  .button:active:not(:disabled) {
+    transform: none;
+  }
 }
