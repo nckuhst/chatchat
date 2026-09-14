@@ -35,6 +35,7 @@
 - Produces:
   - `type Tier = 'warmup' | 'star1' | 'star2' | 'star3'`
   - `const TIER_ORDER: readonly Tier[]`
+  - `const TIER_LABEL: Record<Tier, string>`
   - `interface Question { id: string; tier: Tier; text: string }`
   - `interface GameState { selectedTiers: Tier[]; deck: string[]; position: number; skipped: string[]; startedAt: number }`
   - `type Rng = () => number`
@@ -707,7 +708,7 @@ git commit -m "feat: add localStorage persistence with schema versioning"
 - Produces: `const QUESTIONS: readonly Question[]`（75 題）
 
 **撰寫原則（已於實作內容中落實，修改題目時須維持）：**
-- 每題為開放式問句，無法用是／否回答
+- 每題須引導對方展開敘述，而非索取單一事實。中文慣用的邀請句式（「有沒有…？」「是不是…？」）視為開放式，因其在口語中的作用是邀請對方展開，而非要求是／否作答
 - 不預設立場：不假定對方有伴侶、小孩、宗教信仰或良好的家庭關係
 - 三星題問的是內心，不是把柄——要能被誠實回答而不使人難堪
 - 同層級內不重複提問角度
@@ -1163,7 +1164,13 @@ return (
 )
 ```
 
-同時把 `GameAction` 加入從 `./game/reducer` 的型別 import。
+另外新增一行型別 import（Task 5 的 App.tsx 並沒有來自 reducer 的型別 import 可供併入）：
+
+```tsx
+import type { GameAction } from './game/reducer'
+```
+
+必須用 `import type`：`tsconfig` 設了 `isolatedModules`，以值 import 匯入純型別會導致打包錯誤。
 
 - [ ] **Step 4: 手動驗證抽卡流程**
 
@@ -1205,6 +1212,9 @@ git commit -m "feat: add card component and play screen"
 import { TIER_LABEL } from '../game/types'
 import type { Tier } from '../game/types'
 
+// `Record<Tier, string>` 要求四個層級都有值。實務上 warmup 恆為第一層，
+// 而第一張卡不觸發過場，因此 warmup 這則永遠不會顯示——保留是為了型別完整性，
+// 改用 Partial<Record<...>> 只會換來一個沒有價值的 null 檢查。
 const BLURB: Record<Tier, string> = {
   warmup: '先從輕鬆的開始，讓大家熱起來。',
   star1: '接下來的題目會多一點你自己。慢慢來，沒有標準答案。',
