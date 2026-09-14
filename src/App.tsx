@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import Setup from './screens/Setup'
+import Play from './screens/Play'
 import { QUESTIONS } from './data/questions'
-import { createGame, indexQuestions } from './game/reducer'
+import { createGame, currentQuestionId, gameReducer, indexQuestions, isFinished } from './game/reducer'
+import type { GameAction } from './game/reducer'
 import { clearGame, loadGame, saveGame } from './game/storage'
 import type { GameState, Tier } from './game/types'
 
@@ -29,6 +31,22 @@ export default function App() {
     return <Setup savedExists={saved !== null} onStart={start} onResume={resume} />
   }
 
-  const id = game.deck[game.position]
-  return <main className="screen">{id ? byId[id].text : '（牌堆已用完）'}</main>
+  function dispatch(action: GameAction) {
+    setGame((current) => (current ? gameReducer(current, action) : current))
+  }
+
+  if (isFinished(game)) {
+    return <main className="screen">（牌堆已用完）</main>
+  }
+
+  const questionId = currentQuestionId(game)!
+  return (
+    <Play
+      question={byId[questionId]}
+      index={game.position}
+      total={game.deck.length}
+      onNext={() => dispatch({ type: 'next' })}
+      onSwap={() => dispatch({ type: 'swap' })}
+    />
+  )
 }
