@@ -84,10 +84,10 @@ npm run dev
 
 ### GitHub Pages
 
-目前 repository 尚未加入自動部署 workflow。可以依照 [Vite 官方 GitHub Pages 指南](https://vite.dev/guide/static-deploy#github-pages) 設定：
+專案已包含 [部署 workflow](.github/workflows/deploy.yml)，推送至 `main` 時會自動測試、建置並部署。初次啟用可參考 [Vite 官方 GitHub Pages 指南](https://vite.dev/guide/static-deploy#github-pages) 設定：
 
 1. 在 repository 的 **Settings → Pages → Build and deployment**，將 **Source** 設為 **GitHub Actions**。
-2. 新增 `.github/workflows/deploy.yml`，使用官方指南中的 workflow，設定推送至 `main` 時執行 `npm ci`、`npm run build`，並發布 `dist/`。
+2. 確認 `.github/workflows/deploy.yml` 已提交至 `main`。Workflow 使用 Node.js 22，執行 `npm ci`、`npm test`、`npm run build`，並發布 `dist/`。
 3. 確認資源路徑：目前 `vite.config.ts` 使用 `base: './'`，讓資源採相對路徑。若依官方指南使用固定專案路徑，此 repository 對應的設定為 `base: '/chatchat/'`。
 4. 提交並推送 workflow，待 GitHub Actions 部署成功後，從 **Settings → Pages** 開啟網站。
 
