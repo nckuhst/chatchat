@@ -1,7 +1,10 @@
 import { buildDeck } from './deck'
 import type { GameState, Question, Rng, Tier } from './types'
 
-export type GameAction = { type: 'next' } | { type: 'swap' }
+export type GameAction =
+  | { type: 'next' }
+  | { type: 'swap' }
+  | { type: 'next-tier'; byId: Readonly<Record<string, Question>> }
 
 export function indexQuestions(questions: readonly Question[]): Record<string, Question> {
   return Object.fromEntries(questions.map((q) => [q.id, q]))
@@ -56,10 +59,32 @@ export function isResumable(
   return !isFinished(state) && state.deck.every((id) => id in byId)
 }
 
+/** 下一個已選階段的第一張卡；最後階段或已結束時回傳 null。 */
+export function nextTierPosition(
+  state: GameState,
+  byId: Readonly<Record<string, Question>>,
+): number | null {
+  const current = byId[state.deck[state.position]]
+  if (!current || isFinished(state)) return null
+  const position = state.deck.findIndex((id, index) =>
+    index > state.position && byId[id] !== undefined && byId[id].tier !== current.tier,
+  )
+  return position === -1 ? null : position
+}
+
 export function gameReducer(state: GameState, action: GameAction): GameState {
   if (isFinished(state)) return state
 
   switch (action.type) {
+    case 'next-tier': {
+      const position = nextTierPosition(state, action.byId)
+      if (position === null) return state
+      return {
+        ...state,
+        position,
+        skipped: [...state.skipped, ...state.deck.slice(state.position, position)],
+      }
+    }
     case 'next':
       return { ...state, position: state.position + 1 }
     case 'swap':

@@ -3,10 +3,10 @@ export type Tier = 'warmup' | 'star1' | 'star2' | 'star3'
 export const TIER_ORDER: readonly Tier[] = ['warmup', 'star1', 'star2', 'star3']
 
 export const TIER_LABEL: Record<Tier, string> = {
-  warmup: '暖身破冰',
-  star1: '一星',
-  star2: '二星',
-  star3: '三星',
+  warmup: '輕鬆開個頭',
+  star1: '多認識一點',
+  star2: '分享心情',
+  star3: '聊聊心裡話',
 }
 
 export interface Question {

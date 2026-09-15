@@ -1,19 +1,25 @@
+import HomeHeader from '../components/HomeHeader'
+import Bloom from '../components/Bloom'
+
 interface FinishedProps {
+  onHome: () => void
   total: number
   skipped: number
   onRestart: () => void
 }
 
-export default function Finished({ total, skipped, onRestart }: FinishedProps) {
+export default function Finished({ total, skipped, onRestart, onHome }: FinishedProps) {
   return (
     <main className="screen screen--finished">
-      <h1>今天就到這裡</h1>
+      <HomeHeader onHome={onHome} />
+      <Bloom className="finished__flower" />
+      <h1>今天先切到這裡</h1>
       <p className="lede">
-        你們一起翻完了 {total} 張卡{skipped > 0 && `，換掉了 ${skipped} 張`}。
+        這一回聊了 {total - skipped} 張卡{skipped > 0 && `，略過了 ${skipped} 張`}。
       </p>
-      <p className="lede">謝謝每個人願意說出口的部分。</p>
+      <p className="lede">謝謝你，分了一點日常、一點自己給我。</p>
       <button type="button" className="button button--primary" onClick={onRestart}>
-        重新開始
+        再切一回
       </button>
     </main>
   )

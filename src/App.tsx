@@ -12,6 +12,7 @@ import {
   isFinished,
   isResumable,
   isTierBoundary,
+  nextTierPosition,
 } from './game/reducer'
 import type { GameAction } from './game/reducer'
 import { clearGame, loadGame, saveGame } from './game/storage'
@@ -44,6 +45,17 @@ export default function App() {
     setGame(createGame(QUESTIONS, tiers, Math.random, Date.now()))
   }
 
+  function goHome() {
+    if (game && isResumable(game, byId)) {
+      saveGame(game, localStorage)
+      setSaved(game)
+    } else {
+      clearGame(localStorage)
+      setSaved(null)
+    }
+    setGame(null)
+  }
+
   function resume() {
     setGame(saved)
     setSaved(null)
@@ -64,7 +76,7 @@ export default function App() {
   }
 
   if (isFinished(game)) {
-    return <Finished total={game.deck.length} skipped={game.skipped.length} onRestart={restart} />
+    return <Finished total={game.deck.length} skipped={game.skipped.length} onRestart={restart} onHome={goHome} />
   }
 
   const questionId = currentQuestionId(game)!
@@ -73,14 +85,20 @@ export default function App() {
     return (
       <Interstitial
         tier={byId[questionId].tier}
+        onHome={goHome}
         onContinue={() => setAckPosition(game.position)}
       />
     )
   }
 
+  const nextPosition = nextTierPosition(game, byId)
+
   return (
     <Play
       question={byId[questionId]}
+      onHome={goHome}
+      nextTier={nextPosition === null ? null : byId[game.deck[nextPosition]].tier}
+      onNextTier={() => dispatch({ type: 'next-tier', byId })}
       index={game.position}
       total={game.deck.length}
       onNext={() => dispatch({ type: 'next' })}

@@ -1,112 +1,49 @@
-/* ============================================================
-   深度對話卡牌 — 視覺設計
-   概念：入夜。四個層級是一個傍晚的四段光線，由明亮走向沉靜。
-   卡片底色隨層級變深——燈慢慢暗下來，話才說得出口。
-   ============================================================ */
-
-/* ---------- 色階原料：由淺到深的一條序列 ----------
-   色相單向轉動 40° 琥珀 → 353° 玫瑰 → 285° 紫 → 232° 墨藍，
-   明度逐級遞減。bg 是卡面，fg 是卡面上的主文字，
-   mid 是卡面上的次要文字，edge 是卡緣，mark 是放在頁面底色上的識別色。 */
+/* 切切 CHAT CHAT — warm paper, pastel cards, and a little room to breathe. */
 :root {
-  color-scheme: light dark;
-
-  --warmup-bg: #f8e5c3;
-  --warmup-fg: #3e2c11;
-  --warmup-mid: #7a5a22;
-  --warmup-edge: #e6cb99;
-  --warmup-mark: #8a5a12;
-
-  --star1-bg: #e6a3ab;
-  --star1-fg: #3f1c2a;
-  --star1-mid: #6e2f42;
-  --star1-edge: #d68f99;
-  --star1-mark: #9e4257;
-
-  --star2-bg: #74568f;
-  --star2-fg: #f7f1f8;
-  --star2-mid: #efe4f2;
-  --star2-edge: #5e4278;
-  --star2-mark: #6b4a85;
-
-  --star3-bg: #2f3358;
-  --star3-fg: #e8e6f4;
-  --star3-mid: #b7b4d6;
-  --star3-edge: #222643;
-  --star3-mark: #7f83cc;
-
-  /* ---------- 中性色：桌面與紙 ---------- */
-  --paper: #ece9f1;
-  --panel: #f7f5fa;
-  --ink: #241f35;
-  --ink-soft: #4c4664;
-  --ink-muted: #635c7d;
-  --line: #d8d2e3;
-  --line-strong: #7a7091;
-  --focus: #4b3f7a;
-  --shadow: 0 22px 44px -28px rgba(36, 31, 53, 0.55);
-
-  /* ---------- 字體：兩個家族，各司其職 ----------
-     serif（宋體／明體）是卡片的聲音：標題、題目、層級名。
-     sans 是裝置的聲音：按鈕、進度、標籤。皆為系統字體，不外掛 CDN。 */
-  --font-sans: system-ui, -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC",
-    "Microsoft JhengHei", "Helvetica Neue", Arial, sans-serif;
-  --font-serif: "Songti TC", "Noto Serif TC", "Noto Serif CJK TC", "Source Han Serif TC",
-    "PMingLiU", Georgia, "Times New Roman", serif;
-
-  /* ---------- 字級 ---------- */
+  color-scheme: light;
+  --warmup-bg: #f9e8b9;
+  --warmup-fg: #594522;
+  --warmup-mid: #796036;
+  --warmup-edge: #e6d39d;
+  --warmup-mark: #816123;
+  --star1-bg: #f7dcd2;
+  --star1-fg: #654338;
+  --star1-mid: #855549;
+  --star1-edge: #e8c5ba;
+  --star1-mark: #945844;
+  --star2-bg: #e0e9d8;
+  --star2-fg: #3f5540;
+  --star2-mid: #566b50;
+  --star2-edge: #c4d3b9;
+  --star2-mark: #516b46;
+  --star3-bg: #e9e1f0;
+  --star3-fg: #584965;
+  --star3-mid: #71617e;
+  --star3-edge: #d2c4df;
+  --star3-mark: #766087;
+  --paper: #fbf7ef;
+  --panel: #fffcf6;
+  --ink: #534638;
+  --ink-soft: #756657;
+  --ink-muted: #827262;
+  --line: #e8dfd2;
+  --line-strong: #b5a48e;
+  --focus: #8c553e;
+  --shadow: 0 16px 36px -20px #8f725a55;
+  --font-sans: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-serif: "Songti TC", "Noto Serif TC", "PMingLiU", Georgia, serif;
   --t-xs: 0.8125rem;
   --t-sm: 0.9375rem;
-  --t-base: 1.0625rem;
-  --t-lede: 1.125rem;
-  --t-title: clamp(2rem, 9vw, 2.75rem);
-  --t-card: clamp(1.75rem, 7.6vw, 2.375rem);
-  --t-tier: clamp(2.5rem, 13vw, 3.75rem);
-
-  /* ---------- 形狀與節奏 ---------- */
-  --radius-card: 22px;
+  --t-base: 1rem;
+  --t-lede: 1rem;
+  --t-title: clamp(2.5rem, 9vw, 3.25rem);
+  --t-card: clamp(1.5rem, 6vw, 2rem);
+  --t-tier: clamp(2rem, 10vw, 3rem);
+  --radius-card: 30px;
   --radius-button: 999px;
-  --radius-swatch: 8px;
+  --radius-swatch: 50%;
   --gutter: 1.25rem;
   --tap: 52px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --warmup-bg: #d5bb88;
-    --warmup-fg: #2a1e08;
-    --warmup-mid: #4f3a11;
-    --warmup-edge: #bb9f6c;
-    --warmup-mark: #e0c48f;
-
-    --star1-bg: #c08e97;
-    --star1-fg: #24101a;
-    --star1-mid: #452030;
-    --star1-edge: #a77680;
-    --star1-mark: #e2a2ab;
-
-    --star2-bg: #6e5289;
-    --star2-fg: #f2e9f6;
-    --star2-mid: #e4d8ec;
-    --star2-edge: #563e6e;
-    --star2-mark: #be9cd4;
-
-    --star3-bg: #262a47;
-    --star3-fg: #dfdcef;
-    --star3-mid: #a9a5ce;
-    --star3-edge: #1a1d31;
-    --star3-mark: #8e92c8;
-
-    --paper: #141220;
-    --panel: #1d1a2b;
-    --ink: #ebe8f4;
-    --ink-soft: #c0bad4;
-    --ink-muted: #9c95b4;
-    --line: #2e2942;
-    --line-strong: #6b6288;
-    --focus: #b9aee8;
-    --shadow: 0 22px 44px -26px rgba(0, 0, 0, 0.72);
-  }
 }
 
 /* ---------- 層級對映：同一組變數，卡片與過場共用 ---------- */
@@ -560,4 +497,116 @@ fieldset {
   .button:active:not(:disabled) {
     transform: none;
   }
+}
+
+/* A quiet, speckled tabletop, made entirely with CSS. */
+body {
+  background-image: radial-gradient(#bda78b25 0.7px, transparent 0.7px);
+  background-size: 9px 9px;
+}
+.screen { max-width: 34rem; }
+.screen--setup { padding-top: calc(2rem + env(safe-area-inset-top)); }
+.welcome { text-align: center; }
+.eyebrow { font-size: 0.75rem; letter-spacing: 0.24em; color: var(--ink-muted); }
+.welcome__cards { position: relative; width: 180px; height: 136px; margin: 1.5rem auto 1.25rem; }
+.mini-card { position: absolute; left: 42px; top: 4px; width: 96px; height: 124px; border: 1px solid #c5b39255; border-radius: 15px; box-shadow: 0 7px 12px #90745b12; }
+.mini-card--back { background: var(--star2-bg); transform: rotate(-19deg) translateX(-28px); }
+.mini-card--middle { background: var(--star1-bg); transform: rotate(17deg) translateX(27px); }
+.mini-card--front { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: #fff6da; transform: rotate(-4deg); }
+.bloom { width: 56px; height: 56px; flex-shrink: 0; color: #d79b6a; }
+.mini-card span { font-family: Georgia, serif; font-style: italic; font-size: 12px; color: #876446; }
+.welcome__spark { position: absolute; right: -7px; top: 14px; color: #ae8753; font-size: 22px; }
+.screen--setup h1 { font-weight: 600; letter-spacing: 0.12em; margin: 0 0 0.5rem 0.12em; }
+.welcome__subtitle { font-size: 1.0625rem; letter-spacing: 0.07em; margin-bottom: 0.875rem; }
+.screen--setup .lede { margin: 0 auto 2rem; font-size: 0.875rem; }
+.tier-picker { gap: 0.625rem; margin-bottom: 0; }
+.tier-picker legend { width: 100%; font-size: 0.9375rem; letter-spacing: 0.04em; font-weight: 600; color: var(--ink); }
+.tier-picker legend span { float: right; font-size: 0.6875rem; font-weight: 400; letter-spacing: 0; padding-top: 3px; color: var(--ink-muted); }
+.tier-option { min-height: 76px; padding: 0.75rem 1rem; border-radius: 19px; gap: 0.875rem; transition: background-color 160ms, border-color 160ms, transform 160ms; }
+.tier-option:has(input:checked) { background: var(--tier-bg); border-color: var(--tier-edge); }
+.tier-option__flower { display: flex; align-items: center; }
+.tier-option__flower .bloom { width: 36px; height: 36px; color: var(--tier-mark); opacity: 0.75; }
+.tier-option__copy { display: flex; flex: 1; flex-direction: column; min-width: 0; gap: 2px; }
+.tier-option__copy strong { font-size: 0.9375rem; font-weight: 600; color: var(--tier-fg); }
+.tier-option__copy small { font-size: 0.75rem; letter-spacing: 0; color: var(--ink-soft); }
+.tier-option input[type="checkbox"] { order: 3; width: 23px; height: 23px; border-width: 1.5px; display: grid; place-content: center; }
+.tier-option input[type="checkbox"]:checked { background: var(--tier-mark); border-color: var(--tier-mark); }
+.tier-option input[type="checkbox"]:checked::after { content: ''; width: 9px; height: 5px; border-left: 2px solid white; border-bottom: 2px solid white; transform: translateY(-1px) rotate(-45deg); }
+.gentle-note { text-align: center; font-size: 0.75rem; color: var(--ink-muted); margin: 1.125rem 0; }
+.button { font-size: 0.9375rem; border-color: var(--line); background: var(--panel); }
+.button--primary { background: #93604a; border-color: #93604a; color: #fffaf2; box-shadow: 0 5px 12px #93604a16; }
+.screen--setup .button--primary { margin-top: 0; }
+.play-brand { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-serif); font-weight: 600; letter-spacing: 0.1em; margin-bottom: 1.25rem; }
+.play-brand span { font-family: var(--font-sans); font-weight: 400; font-size: 0.75rem; color: var(--ink-muted); }
+.progress { letter-spacing: 0.08em; }
+.card { position: relative; isolation: isolate; min-height: 26rem; padding: 1.5rem 1.75rem; border: 5px solid var(--panel); outline: 1px solid var(--tier-edge); }
+.card::before { content: ''; position: absolute; inset: 9px; border: 1px solid var(--tier-edge); border-radius: 20px; pointer-events: none; z-index: -1; }
+.card__tier { border: 1px solid var(--tier-edge); padding: 0.2rem 0.75rem; border-radius: 999px; font-size: 0.75rem; letter-spacing: 0.08em; }
+.card__flower { align-self: center; margin: 1.5rem 0 1rem; width: 46px; height: 46px; color: var(--tier-mark); opacity: 0.6; }
+.card__text { padding-block: 1rem 2rem; }
+.card__footer { color: var(--tier-mid); font-size: 0.75rem; letter-spacing: 0.12em; }
+.screen--interstitial { max-width: 34rem; background: var(--tier-bg); border-radius: 32px; margin-block: 1.25rem; min-height: calc(100dvh - 2.5rem); }
+.interstitial__flower { margin: auto auto 2rem; width: 84px; height: 84px; color: var(--tier-mark); }
+.interstitial__label { margin-top: 0; }
+.interstitial__tier { line-height: 1.5; }
+.interstitial__blurb { padding-bottom: 2rem; }
+.screen--finished::before { display: none; }
+.finished__flower { width: 100px; height: 100px; margin: auto auto 2rem; }
+.screen--finished .button { margin-top: 3rem; margin-bottom: auto; }
+@media (hover: hover) {
+  .tier-option:hover { transform: translateY(-2px); border-color: var(--tier-mark); }
+  .button--primary:hover:not(:disabled) { background: #7c4f3d; border-color: #7c4f3d; }
+}
+@media (min-width: 700px) {
+  .screen--setup { margin-block: 2rem; padding: 2.25rem 2.5rem; background: #fffcf5dd; border: 1px solid var(--line); border-radius: 36px; box-shadow: 0 18px 60px #8b715910; }
+  .screen--play { padding-block: 2rem; }
+}
+@media (max-width: 360px) {
+  .tier-picker legend span { float: none; display: block; }
+  .tier-option { padding-inline: 0.75rem; gap: 0.625rem; }
+  .tier-option__flower .bloom { width: 28px; height: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tier-option:hover { transform: none; }
+}
+
+.home-link {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  text-underline-offset: 6px;
+}
+.home-link:hover { text-decoration: underline; }
+.screen--interstitial > .play-brand { max-width: none; }
+.screen--interstitial .play-brand span { color: var(--tier-mid); }
+.next-tier {
+  align-self: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  background: transparent;
+  border-color: transparent;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.02em;
+}
+
+.brand-english {
+  display: block;
+  margin-top: 0.625rem;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  color: var(--ink-muted);
+}
+.home-link .home-link__english {
+  margin-left: 0.625rem;
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
 }

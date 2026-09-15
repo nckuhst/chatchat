@@ -7,6 +7,7 @@ import {
   isFinished,
   isResumable,
   isTierBoundary,
+  nextTierPosition,
 } from './reducer'
 import type { GameState, Question, Rng } from './types'
 
@@ -128,5 +129,56 @@ describe('isResumable', () => {
 
   it('空牌堆（視為已結束）為 false', () => {
     expect(isResumable(stateWithDeck([], 0), byId)).toBe(false)
+  })
+})
+
+
+describe('跳到下一階段', () => {
+  const expandedById = indexQuestions([
+    ...questions,
+    { id: 's3-01', tier: 'star3', text: '心裡話' },
+  ])
+
+  it('略過當前階段剩餘題目，停在下一階段第一題並觸發過場', () => {
+    const state = stateWithDeck(['w-01', 'w-02', 's1-01'])
+    const next = gameReducer(state, { type: 'next-tier', byId })
+    expect(next.position).toBe(2)
+    expect(currentQuestionId(next)).toBe('s1-01')
+    expect(next.skipped).toEqual(['w-01', 'w-02'])
+    expect(isTierBoundary(next, byId)).toBe(true)
+    expect(state.position).toBe(0)
+    expect(state.skipped).toEqual([])
+    expect(next.deck).toEqual(state.deck)
+  })
+
+  it('只前往有選取的下一階段', () => {
+    const state = stateWithDeck(['w-01', 'w-02', 's3-01'])
+    state.selectedTiers = ['warmup', 'star3']
+    const next = gameReducer(state, { type: 'next-tier', byId: expandedById })
+    expect(currentQuestionId(next)).toBe('s3-01')
+    expect(isTierBoundary(next, expandedById)).toBe(true)
+  })
+
+  it('保留先前換掉的卡，不把已聊過的卡計入略過張數', () => {
+    const state = gameReducer(stateWithDeck(['w-01', 'w-02', 's1-01']), { type: 'swap' })
+    const next = gameReducer(state, { type: 'next-tier', byId })
+    expect(next.skipped).toEqual(['w-01', 'w-02'])
+    const chatted = gameReducer(stateWithDeck(['w-01', 'w-02', 's1-01']), { type: 'next' })
+    expect(gameReducer(chatted, { type: 'next-tier', byId }).skipped).toEqual(['w-02'])
+  })
+
+  it('最後階段不提供跳階段，也不結束遊戲', () => {
+    const state = stateWithDeck(['w-01', 'w-02'])
+    expect(nextTierPosition(state, byId)).toBeNull()
+    expect(gameReducer(state, { type: 'next-tier', byId })).toBe(state)
+  })
+
+  it('已完成或題目不存在時不跳轉', () => {
+    const finished = stateWithDeck(['w-01', 's1-01'], 2)
+    expect(nextTierPosition(finished, byId)).toBeNull()
+    expect(gameReducer(finished, { type: 'next-tier', byId })).toBe(finished)
+    const missing = stateWithDeck(['missing', 's1-01'])
+    expect(nextTierPosition(missing, byId)).toBeNull()
+    expect(gameReducer(missing, { type: 'next-tier', byId })).toBe(missing)
   })
 })
